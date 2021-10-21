@@ -1,7 +1,7 @@
 import fastf1 as ff1
 from numpy import float32
 from pandas.core.frame import DataFrame
-from src import plot_drivers
+from f1lib import plot_drivers
 import pandas as pd
 from dataclasses import dataclass
 
@@ -35,6 +35,14 @@ class DataPrep:
             laps.groupby('LapNumber')["LapTimeSeconds"]
             .apply(self.selective_mean).cumsum()
         )
+   
+    def selective_mean(self, series:pd.Series, *args)->float:
+        best = series.min()
+        min_plus_10pc = (best + best*0.1)
+        
+        mask = ( series >= best ) & (series <= min_plus_10pc)
+        
+        return series[mask].mean()
 
     def prep_for_lap_plot(self) -> pd.DataFrame:
         """
@@ -63,11 +71,3 @@ class DataPrep:
             .apply(lambda row: (row - ref), axis=0)
         )
     
-    def selective_mean(self, series:pd.Series, *args)->float:
-        print(args)
-        best = series.min()
-        min_plus_10pc = (best + best*0.1)
-        
-        mask = ( series >= best ) & (series <= min_plus_10pc)
-        
-        return series[mask].mean()
