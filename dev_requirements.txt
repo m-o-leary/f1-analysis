@@ -1,0 +1,4 @@
+jupyter
+qgrid
+ipykernel
+pytest
